@@ -7,7 +7,7 @@ export default function Home() {
       <div className="flex flex-row items-center gap-2 mt-5 mb-3">
         <span className="text-2xl font-bold">검색</span>
         <input
-          className="bg-neutral-100 p-1 outline-none ring-0 border-b-2 border-blue-500"
+          className="bg-neutral-100 p-1 outline-none ring-0 border-b-4 border-blue-500"
           type="text"
           placeholder="이름을 입력하세요"
         />

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -11,17 +11,20 @@ export async function GET() {
       { status: 401 }
     );
   }
-  try {
-    const students = await db.user.findMany({
-      where: {
-        connected: true,
-      },
-    });
-    return NextResponse.json(students);
-  } catch (error) {
+  const user = await db.user.findUnique({
+    where: {
+      id: session.value,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+  if (!user) {
     return NextResponse.json(
-      { error: "학생 목록을 가져오는데 실패했습니다." },
-      { status: 500 }
+      { error: "사용자를 찾을 수 없습니다." },
+      { status: 404 }
     );
   }
+  return NextResponse.json(user);
 }
