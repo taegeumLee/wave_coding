@@ -1,7 +1,22 @@
+"use client";
+
 import Schedule from "@/components/schedule";
 import ConnectStudentList from "./components/connect_student_list";
+import { User } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [studentList, setStudentList] = useState<User[]>([]);
+
+  useEffect(() => {
+    const fetchStudentList = async () => {
+      const data = await fetch("/api/get_connected_students");
+      const studentList = await data.json();
+      setStudentList(studentList);
+    };
+    fetchStudentList();
+  }, []);
+
   return (
     <div className="bg-neutral-100 max-w-screen-2xl h-screen mx-auto p-4">
       <div className="flex flex-row items-center gap-2 mt-5 mb-3">
@@ -13,8 +28,11 @@ export default function Home() {
         />
       </div>
       <div className="flex flex-row gap-4 h-full">
-        <Schedule />
-        <ConnectStudentList />
+        <Schedule studentList={studentList} />
+        <ConnectStudentList
+          studentList={studentList}
+          setStudentList={setStudentList}
+        />
       </div>
     </div>
   );

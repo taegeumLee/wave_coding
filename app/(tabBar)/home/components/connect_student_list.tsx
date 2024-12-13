@@ -1,22 +1,18 @@
 "use client";
 
 import { User } from "@prisma/client";
-import { useEffect, useState } from "react";
 
-export default function ConnectStudentList() {
-  const [studentList, setStudentList] = useState<User[]>([]);
+interface ConnectStudentListProps {
+  studentList: User[];
+  setStudentList: (students: User[]) => void;
+}
 
-  useEffect(() => {
-    const fetchStudentList = async () => {
-      const data = await fetch("/api/get_connected_students");
-      const studentList = await data.json();
-      setStudentList(studentList);
-    };
-    fetchStudentList();
-  }, []);
-
+export default function ConnectStudentList({
+  studentList,
+  setStudentList,
+}: ConnectStudentListProps) {
   return (
-    <div className="bg-neutral-200 w-1/4 h-3/4  rounded-lg">
+    <div className="bg-neutral-200 w-1/4 h-3/4 rounded-lg">
       <div className="flex flex-col items-center justify-center">
         <span className="text-3xl font-bold mt-4 mb-4 border-b-4 border-blue-500">
           학생 목록
@@ -33,7 +29,6 @@ export default function ConnectStudentList() {
               </span>
               <span className="text-2xl font-bold">{student.name}</span>
             </div>
-
             <div className="w-full h-0.5 bg-neutral-300" />
           </div>
         ))}
