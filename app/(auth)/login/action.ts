@@ -9,6 +9,7 @@ import db from "@/lib/db";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import UpdateSession from "@/lib/session/updateSession";
+// import bcrypt from "bcrypt";
 
 const checkEmailExists = async (email: string) => {
   const user = await db.user.findUnique({
@@ -47,11 +48,10 @@ export const login = async (
     email: formData.get("email"),
     password: formData.get("password"),
   };
-  const result = await formSchema.spa(data);
+  const result = await formSchema.safeParseAsync(data);
   if (!result.success) {
     return result.error.flatten();
   } else {
-    //if user is found, check password hash
     const user = await db.user.findUnique({
       where: { email: result.data.email },
       select: {
@@ -60,7 +60,26 @@ export const login = async (
       },
     });
 
-    await UpdateSession(parseInt(user!.id));
+    if (!user) {
+      return {
+        fieldErrors: {
+          email: ["사용자를 찾을 수 없습니다."],
+        },
+      };
+    }
+    // const isValidPassword = await bcrypt.compare(
+    //   result.data.password,
+    //   user.password
+    // );
+    // if (!isValidPassword) {
+    //   return {
+    //     fieldErrors: {
+    //       password: ["비밀번호가 일치하지 않습니다."],
+    //     },
+    //   };
+    // }
+
+    await UpdateSession(user.id);
     redirect("/home");
   }
 };

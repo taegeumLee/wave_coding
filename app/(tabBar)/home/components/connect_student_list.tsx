@@ -8,9 +8,9 @@ export default function ConnectStudentList() {
 
   useEffect(() => {
     const fetchStudentList = async () => {
-      const response = await fetch("/api/students/get_connected_students");
-      const data = await response.json();
-      setStudentList(data);
+      const data = await fetch("/api/get_connected_students");
+      const studentList = await data.json();
+      setStudentList(studentList);
     };
     fetchStudentList();
   }, []);

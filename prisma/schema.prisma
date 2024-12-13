@@ -24,8 +24,10 @@ model User {
   updatedAt DateTime   @updatedAt
   textBooks TextBook[]
   schedule  Schedule[]
-
-  role String @default("student")
+  role      String     @default("student")
+  teacher   User?      @relation("TeacherToStudent", fields: [teacherId], references: [id])
+  teacherId String?
+  students  User[]     @relation("TeacherToStudent")
 }
 
 model TextBook {

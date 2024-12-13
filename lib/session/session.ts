@@ -1,13 +1,10 @@
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
-
-interface SessionContent {
-  id?: number;
-}
+import { User } from "@prisma/client";
 
 async function getSession() {
   const cookieStore = await cookies();
-  return getIronSession<SessionContent>(cookieStore, {
+  return getIronSession<User>(cookieStore, {
     cookieName: "user",
     password: process.env.COOKIE_PASSWORD!,
   });
