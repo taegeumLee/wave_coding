@@ -2,22 +2,48 @@ import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const studentId = searchParams.get("studentId");
-
-  if (!studentId) {
+  try {
+    const schedules = await db.schedule.findMany({
+      include: {
+        student: true,
+      },
+    });
+    return NextResponse.json(schedules);
+  } catch (error) {
     return NextResponse.json(
-      { error: "Student ID is required" },
+      { error: "Failed to fetch schedules" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  const { studentId, startTime, endTime } = await request.json();
+
+  if (!studentId || !startTime || !endTime) {
+    return NextResponse.json(
+      { error: "Required fields are missing" },
       { status: 400 }
     );
   }
 
-  const schedules = await db.schedule.findMany({
-    where: {
-      studentId: studentId,
-    },
-  });
+  try {
+    const newSchedule = await db.schedule.create({
+      data: {
+        studentId,
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
+      },
+      include: {
+        student: true,
+      },
+    });
 
-  console.log("Sending schedules:", schedules);
-  return NextResponse.json(schedules);
+    return NextResponse.json(newSchedule);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to create schedule" },
+      { status: 500 }
+    );
+  }
 }
