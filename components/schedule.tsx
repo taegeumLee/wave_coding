@@ -58,97 +58,122 @@ export default function Schedule({ studentList }: StudentListProps) {
   };
 
   const events = schedules.map((schedule) => {
-    console.log("Converting schedule:", schedule);
+    const student = studentList.find((s) => s.id === schedule.studentId);
+
+    // UTC 시간을 한국 시간으로 정확하게 변환
+    const startDate = new Date(schedule.startTime);
+    const endDate = new Date(schedule.endTime);
+
+    console.log("Original UTC:", {
+      start: schedule.startTime,
+      end: schedule.endTime,
+      convertedStart: startDate,
+      convertedEnd: endDate,
+    });
+
     return {
       id: schedule.id,
-      title: `학생 ${schedule.studentId} 수업`,
-      start: new Date(schedule.startTime).toISOString(),
-      end: new Date(schedule.endTime).toISOString(),
-      backgroundColor: "#3788d8",
-      borderColor: "#3788d8",
+      title: `${student?.name || "Unknown"} 수업`,
+      start: startDate,
+      end: endDate,
+      backgroundColor: "#3B82F6",
+      borderColor: "#3B82F6",
       extendedProps: {
         studentId: schedule.studentId,
+        studentName: student?.name,
       },
+      allDay: false,
     };
   });
 
   return (
-    <div className="w-3/4 h-3/4 bg-white rounded-lg p-4 shadow-sm">
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
-        editable={true}
-        droppable={true}
-        eventDrop={handleEventDrop}
-        events={events}
-        locale={koLocale}
-        height="100%"
-        slotMinTime="09:00:00"
-        slotMaxTime="22:00:00"
-        nowIndicator={true}
-        allDaySlot={false}
-        slotDuration="00:30:00"
-        eventTimeFormat={{
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }}
-        dayHeaderFormat={{
-          weekday: "short",
-          month: "numeric",
-          day: "numeric",
-          omitCommas: true,
-        }}
-        eventContent={(eventInfo) => {
-          return (
-            <div className="p-1.5 text-white h-full">
-              <div className="font-bold text-sm mb-0.5">
-                학생 {eventInfo.event.extendedProps.studentId}
+    <div className="w-3/4 h-3/4 bg-neutral-50 rounded-lg p-4 shadow-sm border-2 border-neutral-200">
+      <h2 className="text-3xl font-bold mb-4">수업 일정</h2>
+      <div className="h-[calc(100%-4rem)] overflow-auto">
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          editable={true}
+          droppable={true}
+          eventDrop={handleEventDrop}
+          events={events}
+          locale={koLocale}
+          height="auto"
+          contentHeight="auto"
+          aspectRatio={1.5}
+          handleWindowResize={false}
+          stickyHeaderDates={true}
+          eventTimeFormat={{
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }}
+          dayHeaderFormat={{
+            weekday: "short",
+            month: "numeric",
+            day: "numeric",
+            omitCommas: true,
+          }}
+          eventContent={(eventInfo) => {
+            return (
+              <div className=" text-neutral-700 h-full">
+                <div className="font-bold text-sm mb-0.5">
+                  {eventInfo.event.extendedProps.studentName}
+                </div>
+                <div className="text-xs opacity-90">
+                  {new Date(eventInfo.event.start!).toLocaleTimeString(
+                    "ko-KR",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    }
+                  )}
+                  {" - "}
+                  {new Date(eventInfo.event.end!).toLocaleTimeString("ko-KR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                </div>
               </div>
-              <div className="text-xs opacity-90">
-                {new Date(eventInfo.event.start!).toLocaleTimeString("ko-KR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })}
-                {" - "}
-                {new Date(eventInfo.event.end!).toLocaleTimeString("ko-KR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                })}
-              </div>
-            </div>
-          );
-        }}
-        slotLabelFormat={{
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }}
-        buttonText={{
-          today: "오늘",
-          month: "월",
-          week: "주",
-          day: "일",
-        }}
-        titleFormat={{
-          year: "numeric",
-          month: "long",
-        }}
-        eventBackgroundColor="#3B82F6"
-        eventBorderColor="#3B82F6"
-        dayCellClassNames="hover:bg-blue-50"
-        slotLabelClassNames="text-neutral-500 font-medium"
-        dayHeaderClassNames="bg-neutral-100 text-neutral-700"
-        nowIndicatorClassNames="border-red-500"
-        slotLaneClassNames="bg-white border-neutral-100"
-      />
+            );
+          }}
+          slotLabelFormat={{
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }}
+          buttonText={{
+            today: "오늘",
+            month: "월",
+            week: "주",
+            day: "일",
+          }}
+          titleFormat={{
+            year: "numeric",
+            month: "long",
+          }}
+          eventBackgroundColor="#3B82F6"
+          eventBorderColor="#3B82F6"
+          dayCellClassNames="hover:bg-blue-50"
+          slotLabelClassNames="text-neutral-500 font-medium"
+          dayHeaderClassNames="bg-neutral-100 text-neutral-700"
+          nowIndicatorClassNames="border-red-500"
+          slotLaneClassNames="bg-white border-neutral-100"
+          slotMinTime="09:00:00"
+          slotMaxTime="22:00:00"
+          nowIndicator={true}
+          allDaySlot={false}
+          slotDuration="00:30:00"
+          timeZone="Asia/Seoul"
+        />
+      </div>
     </div>
   );
 }

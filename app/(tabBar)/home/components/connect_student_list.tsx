@@ -12,7 +12,7 @@ export default function ConnectStudentList({
   setStudentList,
 }: ConnectStudentListProps) {
   return (
-    <div className="bg-neutral-200 w-1/4 h-3/4 rounded-lg">
+    <div className="bg-neutral-50 w-full h-full rounded-lg border-2 border-neutral-200">
       <div className="flex flex-col items-center justify-center">
         <span className="text-3xl font-bold mt-4 mb-4 border-b-4 border-blue-500">
           학생 목록

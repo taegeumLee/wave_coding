@@ -16,10 +16,8 @@ export async function GET(request: Request) {
     where: {
       studentId: studentId,
     },
-    include: {
-      student: true, // User 정보를 포함
-    },
   });
 
+  console.log("Sending schedules:", schedules);
   return NextResponse.json(schedules);
 }
